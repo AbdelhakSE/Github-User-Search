@@ -8,7 +8,7 @@ export default function RepoCard({rep}:{rep:Repository}){
             <p>⭐{rep.stargazers_count}</p>
             <p>🍴{rep.forks_count}</p>
             <p>● {rep.language}</p>
-            <Link rel="stylesheet" href={rep.html_url} >Repo Url</Link>
+            <Link target="_blank" rel="noreferrer" href={rep.html_url} >Repo Url</Link>
             <p>{}</p>
         </div>
     )

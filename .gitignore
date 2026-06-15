@@ -40,3 +40,4 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 NEXT_PUBLIC_GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxx
+.vercel
