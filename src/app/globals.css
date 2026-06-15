@@ -1,0 +1,738 @@
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface-2: #21262d;
+  --border: #30363d;
+  --border-muted: #21262d;
+  --accent: #2f81f7;
+  --accent-hover: #58a6ff;
+  --accent-subtle: rgba(47, 129, 247, 0.1);
+  --text-primary: #e6edf3;
+  --text-secondary: #c9d1d9;
+  --text-muted: #7d8590;
+  --success: #3fb950;
+  --danger: #f85149;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.5);
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  --transition: 0.15s ease;
+
+  /* spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+}
+
+body {
+  font-family: var(--font);
+  background-color: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  /* prevent horizontal scroll on mobile */
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   PAGE SHELL
+   ============================================================ */
+
+#page {
+  background: var(--bg);
+  width: 100%;
+  min-height: 100dvh;           /* dvh = better than vh on mobile (hides browser chrome) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-primary);
+  position: relative;
+}
+
+/* ============================================================
+   SEARCH BAR
+   — mobile: full width with padding
+   — desktop: constrained to 720px
+   ============================================================ */
+
+#SearchBar {
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  background-color: var(--surface);
+  border-radius: var(--radius-md);
+  /* mobile: nearly full width */
+  width: calc(100% - 32px);
+  max-width: 720px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  gap: var(--space-2);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  font-size: 15px;
+  /* sticky search on mobile so user can always re-search */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin: var(--space-3) auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+#SearchBar::placeholder {
+  color: var(--text-muted);
+}
+
+#SearchBar:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.2);
+}
+
+/* ============================================================
+   MAIN GRID
+   — mobile: single column stacked
+   — tablet (768px+): sidebar + content side by side
+   ============================================================ */
+
+#MainDiv {
+  background-color: var(--bg);
+  width: 100%;
+  display: grid;
+  /* mobile: stack vertically */
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+  flex: 1;
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================================
+   USERS SIDEBAR / LIST
+   — mobile: horizontal scrollable strip at top
+   — tablet+: vertical scrollable sidebar on left
+   ============================================================ */
+
+#usersDiv {
+  width: 100%;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: var(--space-1);
+  padding: var(--space-2);
+
+  /* mobile: horizontal strip */
+  flex-direction: row;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 80px;
+
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  -webkit-overflow-scrolling: touch;      /* smooth scroll iOS */
+}
+
+#usersDiv::-webkit-scrollbar {
+  height: 3px;
+}
+
+#usersDiv::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+/* loading/error inside sidebar */
+#usersDiv h1,
+#usersDiv p {
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  font-weight: 400;
+}
+
+/* ============================================================
+   USER LIST ITEM (sidebar card)
+   — mobile: compact horizontal chip
+   — tablet+: full row with name
+   ============================================================ */
+
+.UserDivs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background-color var(--transition);
+  border: 1px solid transparent;
+  flex-shrink: 0;
+  min-width: 56px;
+}
+
+.UserDivs:hover {
+  background-color: var(--surface-2);
+  border-color: var(--border-muted);
+}
+
+.UserDivs:active {
+  background-color: var(--accent-subtle);
+  border-color: var(--accent);
+}
+
+/* tap highlight removal on mobile */
+.UserDivs {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.UserDivs img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.UserDivs p {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 56px;
+  text-align: center;
+}
+
+/* ============================================================
+   RIGHT PANEL — PROFILE + REPOS
+   ============================================================ */
+
+.userProfile {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  color: var(--text-primary);
+  overflow-y: auto;
+  /* mobile: natural document flow, no fixed height */
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.userProfile::-webkit-scrollbar {
+  width: 4px;
+}
+
+.userProfile::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+/* ============================================================
+   MAIN USER CARD
+   ============================================================ */
+
+.mainUser {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: var(--space-4);
+  gap: var(--space-4);
+  box-shadow: var(--shadow-md);
+}
+
+/* ============================================================
+   USER HEADER ROW
+   ============================================================ */
+
+.users {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.users img {
+  /* mobile: smaller avatar */
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.users div {
+  min-width: 0;           /* allow text truncation inside flex */
+}
+
+.users p:first-child {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.users p:last-child {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+  line-height: 1.4;
+  /* clamp bio to 2 lines on mobile */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================================
+   SOCIAL STATS
+   ============================================================ */
+
+.SocialStats {
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.SocialStats div {
+  background-color: var(--surface-2);
+  border: 1px solid var(--border);
+  flex: 1;
+  padding: var(--space-2) var(--space-1);
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  transition: border-color var(--transition);
+  min-width: 0;
+}
+
+.SocialStats div:hover {
+  border-color: var(--accent);
+}
+
+.SocialStats div p:first-child {
+  font-size: 9px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.SocialStats div p:last-child {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.SocialStats span {
+  font-weight: 700;
+  color: var(--accent-hover);
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   SORT BAR
+   ============================================================ */
+
+.SortsDiv {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--border-muted);
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.SortsDiv > p {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.Sorts {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--surface-2);
+  flex-shrink: 0;
+}
+
+.Sorts div {
+  padding: 5px 10px;
+  border-right: 1px solid var(--border);
+  cursor: pointer;
+  transition: background-color var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.Sorts div:last-child {
+  border-right: none;
+}
+
+.Sorts div:hover {
+  background-color: var(--surface);
+}
+
+.Sorts input {
+  appearance: none;
+  width: 0;
+  height: 0;
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.Sorts label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+/* forks checkbox */
+.SortsDiv > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.SortsDiv > div:last-child input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.SortsDiv > div:last-child label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* ============================================================
+   REPOS GRID
+   — mobile: 1 column
+   — small tablet (480px+): 2 columns
+   — desktop (900px+): 3 columns
+   ============================================================ */
+
+.repos {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: 1fr;          /* mobile: single column */
+  overflow: visible;
+}
+
+/* ============================================================
+   REPO CARD
+   ============================================================ */
+
+.Repo {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  cursor: pointer;
+  /* prevent transform from causing scroll jank on mobile */
+  will-change: transform;
+}
+
+.Repo:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm), 0 0 0 1px var(--accent-subtle);
+}
+
+/* Only apply lift on devices that support hover (not touchscreens) */
+@media (hover: hover) {
+  .Repo:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.Repo p:first-child {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent-hover);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.Repo p:nth-child(2) {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.Repo p:nth-child(3),
+.Repo p:nth-child(4),
+.Repo p:nth-child(5) {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.Repo p:nth-child(5) {
+  color: var(--success);
+}
+
+.Repo a {
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition);
+  margin-top: auto;
+  /* make tap target larger on mobile */
+  padding: var(--space-1) 0;
+}
+
+.Repo a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+/* ============================================================
+   LOADING & ERROR STATES
+   ============================================================ */
+
+.userProfile > h1 {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 400;
+  text-align: center;
+  padding: 40px 0;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+.userProfile > p {
+  font-size: 13px;
+  color: var(--danger);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(248, 81, 73, 0.1);
+  border: 1px solid rgba(248, 81, 73, 0.3);
+  border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* ── Small phones (360px+): tiny tweaks ── */
+@media (min-width: 360px) {
+  #SearchBar {
+    height: 48px;
+  }
+}
+
+/* ── Large phones / small tablets (480px+): 2-col repos ── */
+@media (min-width: 480px) {
+  .repos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .users img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .users p:first-child {
+    font-size: 18px;
+  }
+}
+
+/* ── Tablets (768px+): switch to sidebar layout ── */
+@media (min-width: 768px) {
+  #SearchBar {
+    width: 70%;
+    height: 52px;
+    margin: var(--space-4) auto;
+    position: static;               /* no longer sticky — sidebar handles scroll */
+    box-shadow: none;
+  }
+
+  #MainDiv {
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: 1fr;
+    height: calc(100dvh - 84px);   /* fill remaining viewport */
+  }
+
+  #usersDiv {
+    /* switch back to vertical list */
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 100%;
+    border-bottom: none;
+    border-right: 1px solid var(--border);
+    padding: var(--space-2);
+    scrollbar-width: thin;
+  }
+
+  #usersDiv::-webkit-scrollbar {
+    width: 4px;
+    height: auto;
+  }
+
+  #usersDiv h1,
+  #usersDiv p {
+    white-space: normal;
+    text-align: center;
+    padding: var(--space-4);
+  }
+
+  .UserDivs {
+    flex-direction: row;
+    align-items: center;
+    min-width: unset;
+    width: 100%;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .UserDivs img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .UserDivs p {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .userProfile {
+    padding: var(--space-5);
+    overflow-y: auto;
+    height: 100%;
+  }
+
+  .mainUser {
+    padding: var(--space-5) var(--space-6);
+  }
+
+  .users img {
+    width: 68px;
+    height: 68px;
+  }
+
+  .users p:first-child {
+    font-size: 20px;
+  }
+
+  .SocialStats div p:first-child {
+    font-size: 10px;
+  }
+
+  .SocialStats div p:last-child {
+    font-size: 16px;
+  }
+
+  .SortsDiv {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+  }
+
+  .SortsDiv > div:last-child {
+    margin-left: 0;
+  }
+}
+
+/* ── Desktop (1024px+): wider sidebar, 3-col repos ── */
+@media (min-width: 1024px) {
+  #MainDiv {
+    grid-template-columns: 320px 1fr;
+  }
+
+  .repos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .Sorts label {
+    width: auto;
+  }
+}
+
+/* ── Wide screens (1280px+) ── */
+@media (min-width: 1280px) {
+  #MainDiv {
+    grid-template-columns: 360px 1fr;
+  }
+}
+
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
+/* Respect user's motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Visible focus ring for keyboard users */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
