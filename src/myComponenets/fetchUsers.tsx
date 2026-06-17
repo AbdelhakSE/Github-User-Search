@@ -91,30 +91,29 @@ function handelClick(u:User) : void {
         setErrorRep('')
         setLoadingRep(true)
 
-       fetch(u.repos_url)
-       .then((res)=>
-        {
-          if(!res.ok){
-            throw new Error();
-          }  
-            return res.json()
-        })
-       .then((data:Repository[])=>{
-            setRepo(data);
-            console.log(data)
+
+        Promise.all([
+            fetch(u.repos_url).then((res)=>{
+                if(!res.ok){
+                throw new Error();
+                }  
+            return res.json()}),
+            fetch(`https://api.github.com/users/${u.login}`).then((res)=> {
+                if(!res.ok){
+                    throw new Error();
+                }
+                return res.json()
+            } )
+        ]).then(([repos,userDetail])=>{
+            setRepo(repos);
             setLoadingRep(false)
-            console.log(data)
-        }).catch((error:unknown)=>{
-            const msg = error instanceof Error ? error.message :"Unknown error"
-        console.log(msg);
+            setUser(userDetail)
+
+        })
+        .catch((error:unknown)=>{
         setErrorRep("failde to load repositories. try again later")
+        setLoadingRep(false)
        });
-       fetch(`https://api.github.com/users/${u.login}`)
-       .then((res)=>{
-        return res.json()
-       }).then((data)=>{
-        setUser(data);
-       })
 }
 
    
